@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <form action="{% url 'for_sale' %}">
+        <button type="submit">Sell</button>
+    </form>
+
+    <form action="{% url 'for_auction' %}">
+        <button type="submit">Put to auction</button>
+    </form>
+
+
+
+{% endblock %}
