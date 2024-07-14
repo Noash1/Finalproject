@@ -17,7 +17,6 @@ class Category(models.Model):
 
 # Model Estate has all the needed fields to describe the estate, that owner wants to put to auction or just sell
 class Estate(models.Model):
-    id = models.AutoField(primary_key=True)  # Gives ID for every estate
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -39,43 +38,40 @@ class Estate(models.Model):
 
 # model for estates that are for selling
 class ForSaleEstate(models.Model):
-    id = models.AutoField(primary_key=True)
     estate = models.ForeignKey(Estate, on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        pass
 
 
 # model for estates that are going for auction
 class OnAuctionEstate(models.Model):
-    id = models.AutoField(primary_key=True)
     estate = models.ForeignKey(Estate, on_delete=models.CASCADE)
     starting_price = models.PositiveIntegerField(default=0)
-    asking_price = models.PositiveIntegerField(default=0, null=True, blank=True)
+    asking_price = models.PositiveIntegerField(default=0)
     bidding_step = models.PositiveIntegerField(default=1000)
     current_price = models.PositiveIntegerField(default=starting_price)
     bidding_price = models.PositiveIntegerField(default=current_price)
+    sold_for = models.PositiveIntegerField()
     end_date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        pass
 
-# don't know how to make those models???????
-"""
-class Bids(models.Model):
+
+class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    estate_id = models.ForeignKey(OnAuctionEstate, on_delete=models.CASCADE)
-    estate_name = models.ForeignKey(OnAuctionEstate, on_delete=models.CASCADE)
-    bidding_sum = models.ForeignKey(OnAuctionEstate, on_delete=models.CASCADE)
+    estate = models.ForeignKey(OnAuctionEstate, on_delete=models.CASCADE)
+    bidding_sum = models.PositiveIntegerField(default=1000)
 
     def __str__(self):
-        return f"{self.estate_name} - {self.bidding_sum} - {self.user}"
+        return f"{self.estate.estate.name} - {self.bidding_sum} - {self.user.username}"
 
-
-class AuctionResults(models.Model):
-    estate = models.ForeignKey(OnAuctionEstate, on_delete=models.CASCADE)
-    sold_for = models.ForeignKey(OnAuctionEstate, on_delete=models.CASCADE)
-"""
 
 # comment model for giving comments or asking questions about estates
-class Comments(models.Model):
-    comment = models.ForeignKey(Estate, on_delete=models.CASCADE, related_name="comments")
+class Comment(models.Model):
+    estate = models.ForeignKey(Estate, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
