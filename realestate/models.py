@@ -21,7 +21,7 @@ class Estate(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, help_text='Enter the name of the property')
     description = models.TextField(null=True, help_text='Description of the property')
-    rooms = models.PositiveIntegerField(default=1, help_text='How many rooms total')  # Positive integer field so no one could put negative number
+    rooms = models.PositiveIntegerField(default=1, help_text='How many rooms total')
     bedrooms = models.PositiveIntegerField(default=1, help_text='Number of bedrooms')
     bathrooms = models.PositiveIntegerField(default=1, help_text='Number of bathrooms')
     size = models.PositiveIntegerField(default=0, help_text='Size of the house in square meters')
@@ -44,19 +44,9 @@ class Estate(models.Model):
     floor_plans = models.ImageField(blank=True, help_text='Optional')  # images for floor plans
 
     def __str__(self):
-        return (self.user.username,
-                self.category,
-                self.name,
-                self.description,
-                self.rooms,
-                self.bedrooms,
-                self.bathrooms,
-                self.size,
-                self.architectural_style,
-                self.added_date,
-                self.image,
-                self.video,
-                self.floor_plans)
+        return (f"{self.user.username} {self.category} {self.name} {self.description} {self.rooms} {self.bedrooms}"
+                f"{self.bathrooms} {self.size} {self.architectural_style} {self.added_date} {self.image}"
+                f"{self.video} {self.floor_plans}")
 
 
 # model for estates that are for selling
@@ -67,10 +57,7 @@ class ForSaleEstate(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (self.estate,
-                self.price,
-                self.user.username,
-                self.start_date)
+        return f"{self.estate} {self.price} {self.user.username} {self.start_date}"
 
 
 # model for estates that are going for auction
@@ -79,16 +66,12 @@ class OnAuctionEstate(models.Model):
     estate = models.ForeignKey(Estate, on_delete=models.CASCADE)
     starting_price = models.PositiveIntegerField(default=0)
     asking_price = models.PositiveIntegerField(default=0)
-    sold_for = models.PositiveIntegerField()
+    sold_for = models.PositiveIntegerField(null=True, blank=True)
     starting_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (self.estate,
-                self.user.username,
-                self.starting_price,
-                self.starting_date,
-                self.end_date)
+        return f"{self.estate} {self.user.username} {self.starting_price} {self.starting_date} {self.end_date}"
 
 
 class Bid(models.Model):
@@ -98,10 +81,7 @@ class Bid(models.Model):
     bidding_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (self.estate.estate.name,
-                self.bidding_date,
-                self.bidding_sum,
-                self.user.username)
+        return f"{self.estate.estate.name} {self.bidding_date} {self.bidding_sum} {self.user.username}"
 
 
 # comment model for giving comments or asking questions about estates
