@@ -9,7 +9,7 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
-path('accounts/profile/', ProfileView.as_view(), name='profile'),
+    path('accounts/profile/', ProfileView.as_view(), name='profile'),
 
     # Include the default auth urls after your custom definitions
     path('', include('django.contrib.auth.urls')),
