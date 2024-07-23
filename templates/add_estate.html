@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+            function handleRadioChange() {
+            const estate_for_sale = document.getElementById('estate_for_sale');
+            const estate_on_auction = document.getElementById('estate_on_auction');
+            const selectedValue = document.querySelector('input[name="For sale or on auction"]:checked').value;
+
+            if (selectedValue === 'sell') {
+                estate_for_sale.classList.remove('hidden');
+                estate_on_auction.classList.add('hidden');
+            } else if (selectedValue === 'auction') {
+                estate_for_sale.classList.add('hidden');
+                estate_on_auction.classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name="For sale or on auction"]').forEach((elem) => {
+                elem.addEventListener('change', handleRadioChange);
+            });
+        });
+    </script>
+
+    <h2>Estate Entry Form</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            {{ estate_form.as_p }}
+        </div>
+        <div id="estate_for_sale" class="hidden">
+            {{ estate_for_sale.as_p }}
+        </div>
+        <div id="estate_on_auction" class="hidden">
+            {{ estate_on_auction.as_p }}
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+{% endblock %}
