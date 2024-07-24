@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView, ListView, FormView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView
 from django.shortcuts import render, redirect
 from .models import *
 from django.urls import reverse_lazy
@@ -68,6 +68,19 @@ class HomeView(ListView):
         context['for_sale'] = ForSaleEstate.objects.all().order_by('estate__name')
         context['on_auction'] = OnAuctionEstate.objects.all().order_by('estate__name')
         return context
+
+
+class EstateDetailView(DetailView):
+    model = Estate
+    template_name = 'estate_detail.html'
+    context_object_name = 'estate'
+
+
+class EstateCreateView(CreateView):
+    model = Estate
+    template_name = 'estate_create.html'
+    fields = '__all__'
+    # success_url = reverse_lazy('index')
 
 
 class ProfileView(TemplateView):
