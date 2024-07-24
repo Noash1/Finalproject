@@ -37,8 +37,8 @@ class SignUpForm(UserCreationForm):
 class AddEstateForm(forms.ModelForm):
     class Meta:
         model = Estate
-        widgets = {'For sale or on auction': forms.RadioSelect,
-                   'Description of the property': forms.Textarea(attrs={'rows': 3})}
+        widgets = {'category': forms.RadioSelect,
+                   'description': forms.Textarea(attrs={'rows': 3})}
         exclude = ['user']
 
 

@@ -99,23 +99,32 @@ class About(TemplateView):
 
 
 def add_estate_view(request):
-    estate_form = AddEstateForm()
-    estate_for_sale = AddEstateForSaleForm()
-    estate_on_auction = AddEstateOnAuctionForm()
+    estate_form = AddEstateForm
+    estate_for_sale = AddEstateForSaleForm
+    estate_on_auction = AddEstateOnAuctionForm
 
     if request.method == 'POST':
-        estate_form = AddEstateForm(request.POST)
-        estate_for_sale = AddEstateForSaleForm(request.POST)
-        estate_on_auction = AddEstateOnAuctionForm(request.POST)
+        estate_form = AddEstateForm(request.POST, prefix='estate_form')
+        estate_for_sale = AddEstateForSaleForm(request.POST, prefix='estate_for_sale')
+        estate_on_auction = AddEstateOnAuctionForm(request.POST, prefix='estate_on_auction')
 
         if estate_form.is_valid() and estate_for_sale.is_valid():
-            # Process estate and for_sale data
-            pass
+            estate = estate_form.save(commit=False)
+            estate.user = request.user  # The logged-in user
+            for_sale = estate_for_sale.save(commit=False)
+            for_sale.user = estate.user
+            for_sale.estate = estate
+            estate.save()
+            for_sale.save()
+            return redirect('index.html')
+
         elif estate_form.is_valid() and estate_on_auction.is_valid():
             # Process estate and on_auction data
             pass
         else:
-            pass
+            estate_form = AddEstateForm(prefix='estate_form')
+            estate_for_sale = AddEstateForSaleForm(prefix='estate_for_sale')
+            estate_on_auction = AddEstateOnAuctionForm(prefix='estate_on_auction')
 
     return render(request,
                   'add_estate.html',
