@@ -56,7 +56,6 @@ class SignupView(FormView):
         return context
 
 
-
 class HomeView(ListView):
     model = Estate
     template_name = 'index.html'
@@ -112,4 +111,61 @@ class About(TemplateView):
     template_name = "about.html"
 
 
+def add_estate_view(request):
+    estate_form = AddEstateForm
+    estate_for_sale = AddEstateForSaleForm
+    estate_on_auction = AddEstateOnAuctionForm
 
+    if request.method == 'POST':
+        estate_form = AddEstateForm(request.POST, prefix='estate_form')
+        estate_for_sale = AddEstateForSaleForm(request.POST, prefix='estate_for_sale')
+        estate_on_auction = AddEstateOnAuctionForm(request.POST, prefix='estate_on_auction')
+
+        if estate_form.is_valid() and estate_for_sale.is_valid():
+            estate = estate_form.save(commit=False)
+            estate.user = request.user  # The logged-in user
+            for_sale = estate_for_sale.save(commit=False)
+            for_sale.user = estate.user
+            for_sale.estate = estate
+            estate.save()
+            for_sale.save()
+            return redirect('index.html')
+
+        elif estate_form.is_valid() and estate_on_auction.is_valid():
+            # Process estate and on_auction data
+            pass
+        else:
+            estate_form = AddEstateForm(prefix='estate_form')
+            estate_for_sale = AddEstateForSaleForm(prefix='estate_for_sale')
+            estate_on_auction = AddEstateOnAuctionForm(prefix='estate_on_auction')
+
+    return render(request,
+                  'add_estate.html',
+                  {'estate_form': estate_form,
+                   'estate_for_sale': estate_for_sale,
+                   'estate_on_auction': estate_on_auction}
+                  )
+
+# def add_estate_view(request):
+#     if request.method == 'POST':
+#         form = AddEstateForm(request.POST)
+#         if form.is_valid():
+#             estate = form.save(commit=False)
+#             estate.user = request.user  # The logged-in user
+#             estate.save()
+#             return redirect('index.html')
+#     else:
+#         form = AddEstateForm()
+#     return render(request, 'add_estate.html', {'form': form})
+
+
+# class AddEstateView(CreateView):
+#     model = Estate
+#     form_class = AddEstateForm
+#     template_name = 'add_estate.html'
+#     success_url = reverse_lazy('home')
+#
+#     def get_user(self, request):
+#         if request.user.is_authenticated:
+#             user = request.user
+#             return user

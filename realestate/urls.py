@@ -1,5 +1,7 @@
 from django.urls import path, include
 from .views import *
+
+
 urlpatterns = [
     path('', HomeView.as_view(), name="home"),
     path('estate/<int:pk>/', EstateDetailView.as_view(), name="estate_detail"),
@@ -12,7 +14,7 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path('accounts/profile/', ProfileView.as_view(), name='profile'),
-
+    path('my_estates/new', add_estate_view, name='add_estate'),
     # Include the default auth urls after your custom definitions
     path('', include('django.contrib.auth.urls')),
 ]
