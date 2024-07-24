@@ -20,19 +20,19 @@ class Estate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(choices=[('sell', 'Sell'), ('auction', 'Auction')],
                                 default='Sell',
-                                name='For sale or on auction')
-    name = models.CharField(max_length=255, name='Name of the add/property')
-    description = models.TextField(null=True, name='Description of the property')
-    rooms = models.PositiveIntegerField(default=1, name='Rooms in total')
-    bedrooms = models.PositiveIntegerField(default=1, name='Bedrooms')
-    bathrooms = models.PositiveIntegerField(default=1, name='Bathrooms')
-    size = models.PositiveIntegerField(default=0, name='Size of the house in square meters')
+                                help_text='For sale or on auction')
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, help_text='Description of the property')
+    rooms = models.PositiveIntegerField(default=1, help_text='Rooms in total')
+    bedrooms = models.PositiveIntegerField(default=1)
+    bathrooms = models.PositiveIntegerField(default=1)
+    size = models.PositiveIntegerField(default=0, help_text='Size of the house in square meters')
     architectural_style = models.CharField(
         max_length=255,
         null=True,
         blank=True,
         default='Not specified',
-        name='Style of the house'
+        help_text='Style of the house'
     )
     added_date = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='images/', blank=True)  # To upload images.!!AFTER WE NEED TO REMOVE blank==True
@@ -40,9 +40,9 @@ class Estate(models.Model):
         upload_to='videos/',
         blank=True,
         validators=[FileExtensionValidator(allowed_extensions=['MOV', 'avi', 'mp4', 'webm', 'mkv'])],
-        name='Video of the property (optional)'
+        help_text='optional'
     )  # validators are to make users to upload only specific filetypes
-    floor_plans = models.ImageField(name='Floor plans (optional)', blank=True)  # images for floor plans
+    floor_plans = models.ImageField(help_text='optional', blank=True)  # images for floor plans
 
     def __str__(self):
         return (f"{self.user.username} {self.category} {self.name} {self.description} {self.rooms} {self.bedrooms}"

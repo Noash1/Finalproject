@@ -1,13 +1,61 @@
-from django.shortcuts import redirect, render
-from django.views.generic import TemplateView, ListView
-from django.urls import reverse_lazy
+from django.views.generic import TemplateView, ListView, FormView
+from django.shortcuts import render, redirect
 from .models import *
-from .forms import AddEstateForm, AddEstateOnAuctionForm, AddEstateForSaleForm
+from django.urls import reverse_lazy
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import login
+from .forms import *
 
-# Create your views here.
+
+class CustomLogoutView(LogoutView):
+
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
-# generates first page that is loaded
+class Meta:
+    model = User
+    fields = ('username', 'email', 'password1', 'password2')
+
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+    authentication_form = LoginForm
+
+    def from_valid(self, form):
+        login(self.request, form.get_user())
+        next_url = self.request.GET.get('next', 'profile')
+        return redirect(next_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_login_page'] = True
+        return context
+
+
+def signup(request):
+    form = SignUpForm(request.POST or None)  # Initialize form for GET and POST requests
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('login')
+    return render(request, 'registration/signup.html', {'form': form, 'is_signup_page': True})
+
+
+class SignupView(FormView):
+    template_name = 'registration/signup.html'
+    form_class = SignUpForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_login_page'] = True  # Add this line
+        return context
+
+
 class HomeView(ListView):
     model = Estate
     template_name = 'index.html'
@@ -21,15 +69,17 @@ class HomeView(ListView):
         return context
 
 
-# class CategoryView(ListView):
-#     model = Category
-#     template_name = 'add_estate.html'
-#     context_object_name = 'category'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['category'] = Category.objects.all()
-#         return context
+class ProfileView(TemplateView):
+    template_name = 'registration/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_profile_page'] = True
+        return context
+
+    def get_user_profile(request, username):
+        user = User.objects.get(username=username)
+        return render(request, 'registration/profile.html', {"user": user})
 
 
 class ForSaleView(TemplateView):
@@ -40,8 +90,8 @@ class AuctionView(TemplateView):
     template_name = "forauction.html"
 
 
-class Contact(TemplateView):
-    template_name = "contact.html"
+class Profile(TemplateView):
+    template_name = "registration/profile.html"
 
 
 class About(TemplateView):

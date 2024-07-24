@@ -3,7 +3,7 @@ from .models import *
 
 
 class EstateAdmin(admin.ModelAdmin):
-    column_names = ('id', 'Name of the add/property', 'For sale or on auction', 'Style of the house', 'added_date')
+    column_names = ('id', 'name', 'category', 'architectural_style', 'added_date')
     list_display = column_names
     list_filter = column_names
     search_fields = column_names
