@@ -62,7 +62,12 @@ class Estate(models.Model):
     )  # validators are to make users to upload only specific filetypes
 
     def __str__(self):
-        return f"{self.user.username} - {self.name}"
+        return self.name
+
+    def get_full_description(self):
+        return (f"{self.user.username} {self.category} {self.name} {self.description} {self.rooms} {self.bedrooms}"
+                f"{self.bathrooms} {self.size} {self.architectural_style} {self.added_date} {self.images}"
+                f"{self.video}")
 
 
 # model for estates that are for selling

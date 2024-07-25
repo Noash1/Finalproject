@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load humanize %}
+        <!-- property Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="row g-5 align-items-center">
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+                        <div class="about-img position-relative overflow-hidden p-5 pe-0">
+                            <img class="img-fluid w-100" src="{{ estate.image.url }}" alt="Estate image"> <!--image here-->
+                        </div>
+                    </div>
+                  <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                        <h1 class="mb-4">{{ estate.name }}</h1>
+                        {# <p class="mb-4">Location: {{ estate.address }}</p>#}
+                        <p class="mb-4">Description: {{ estate.description }}</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>{{ estate.get_category_display }}</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Total number of rooms: {{ estate.rooms }}</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Number of bedrooms: {{ estate.bedrooms }}</p>
+						<p><i class="fa fa-check text-primary me-3"></i>Number of bathrooms: {{ estate.bathrooms }}</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Size in square meters: {{ estate.size }}</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Architectural style: {{ estate.architectural_style }}</p>
+                        {% if user.is_authenticated %}
+                          {% if last_sale_price > -1 %}
+                            <h2 class="mb-4">€{{ last_sale_price|intcomma }}</h2>
+                            <a class="btn btn-primary py-3 px-5 mt-3" href="">Buy</a>
+                          {% endif %}
+                          {% if last_bid_sum > -1 %}
+                            <h2 class="mb-4">Current bid: €{{ last_bid_sum|intcomma }}</h2>
+                          {% endif %}
+                          {% if last_bid_sum > -2 %}
+                            <form action="{%  url 'estate_make_bid' estate.id %}" method="post">
+                              {% csrf_token %}
+                              <fieldset>
+                                <label>
+                                    Bid sum:
+                                    <input type="number" name="bid_sum"/>
+                                </label>
+                              </fieldset>
+                                <br>
+                              <input class="btn btn-primary py-3 px-5 mt-3" type="submit" value="Make bid"/>
+                            </form>
+                          {%  endif %}
+                        {%  endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}
