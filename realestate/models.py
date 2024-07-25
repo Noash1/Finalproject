@@ -45,6 +45,9 @@ class Estate(models.Model):
     floor_plans = models.ImageField(help_text='optional', blank=True)  # images for floor plans
 
     def __str__(self):
+        return self.name
+
+    def get_full_description(self):
         return (f"{self.user.username} {self.category} {self.name} {self.description} {self.rooms} {self.bedrooms}"
                 f"{self.bathrooms} {self.size} {self.architectural_style} {self.added_date} {self.image}"
                 f"{self.video} {self.floor_plans}")

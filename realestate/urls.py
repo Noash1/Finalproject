@@ -4,8 +4,8 @@ from .views import *
 
 urlpatterns = [
     path('', HomeView.as_view(), name="home"),
-    path('estate/<int:pk>/', EstateDetailView.as_view(), name="estate_detail"),
-    path('estate/<int:pk>', EstateCreateView.as_view(), name="estate_create"),
+    path('estates/<int:pk>/', EstateDetailView.as_view(), name="estate_detail"),
+    path('estates/<int:pk>/make-bid/', estate_make_bid, name="estate_make_bid"),
     path('forsale/', ForSaleView.as_view(), name="for_sale"),
     path('auction/', AuctionView.as_view(), name="for_auction"),
     path('registration/profile/', Profile.as_view(), name="profile"),

@@ -1,5 +1,7 @@
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
@@ -74,12 +76,32 @@ class EstateDetailView(DetailView):
     template_name = 'estate_detail.html'
     context_object_name = 'estate'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        estate = self.get_object()
+        last_sale = estate.forsaleestate_set.last()
+        context['last_sale_price'] = last_sale.price if last_sale else -1
+        last_bid_sum = -2
+        last_auction = estate.onauctionestate_set.last()
+        if last_auction:
+            last_bid = last_auction.bid_set.last()
+            last_bid_sum = last_bid.bidding_sum if last_bid else -1
+        context['last_bid_sum'] = last_bid_sum
+        return context
 
-class EstateCreateView(CreateView):
-    model = Estate
-    template_name = 'estate_create.html'
-    fields = '__all__'
-    # success_url = reverse_lazy('index')
+
+def estate_make_bid(request, pk):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("estate_detail", args=[pk]))
+    estate = get_object_or_404(Estate, pk=pk)
+    last_auction = estate.onauctionestate_set.last()
+    bid_sum = request.POST.get('bid_sum', 0)
+    bid_sum = float(bid_sum)
+    last_bid = last_auction.bid_set.last()
+    if last_bid and bid_sum > last_bid.bidding_sum:
+        bid = Bid(estate=last_auction, bidding_sum=bid_sum, user=request.user)
+        bid.save()
+    return HttpResponseRedirect(reverse("estate_detail", args=[pk]))
 
 
 class ProfileView(TemplateView):
