@@ -3,58 +3,73 @@ from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 
 
-# Model Category where we give two options 'Sell' that has key 'S' and 'Auction', that has key 'A'.
-# class Category(models.Model):
-#     CATEGORY_FIELD = {
-#         "S": "Sell",
-#         "A": "Auction"
-#     }
-#     category = models.CharField(max_length=1, choices=CATEGORY_FIELD, default="S")
-#
-#     def __str__(self):
-#         return self.category
+# Model Image that handles multiple images.
+class Image(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    images = models.ImageField(upload_to='images/')
+
+    def __str__(self):
+        return self.images
 
 
 # Model Estate has all the needed fields to describe the estate, that owner wants to put to auction or just sell
 class Estate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(choices=[('sell', 'Sell'), ('auction', 'Auction')],
-                                default='Sell',
                                 help_text='For sale or on auction')
+    type = models.CharField(choices=[('apartment', 'Apartment'),
+                                     ('villa', 'Villa'),
+                                     ('townhouse', 'Townhouse'),
+                                     ('mansion', 'Mansion'),
+                                     ('duplex', 'Duplex'),
+                                     ('castle', 'Castle'),
+                                     ('other', 'Other')
+                                     ],
+                            default='other',
+                            help_text='Estate type')
     name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
     description = models.TextField(null=True, help_text='Description of the property')
     rooms = models.PositiveIntegerField(default=1, help_text='Rooms in total')
     bedrooms = models.PositiveIntegerField(default=1)
     bathrooms = models.PositiveIntegerField(default=1)
     size = models.PositiveIntegerField(default=0, help_text='Size of the house in square meters')
     architectural_style = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        default='Not specified',
+        choices=[('contemporary', 'Contemporary'),
+                 ('mid-century modern', 'Mid-century Modern'),
+                 ('classical revival', 'Classical Revival'),
+                 ('tudor', 'Tudor'),
+                 ('georgian', 'Georgian'),
+                 ('victorian', 'Victorian'),
+                 ('gothic revival', 'Gothic Revival'),
+                 ('mediterranean', 'Mediterranean'),
+                 ('shingle', 'Shingle'),
+                 ('italianate', 'Italianate'),
+                 ('spanish colonial', 'Spanish Colonial'),
+                 ('ranch', 'Ranch'),
+                 ('other', 'Other')
+                 ],
+        default='other',
         help_text='Style of the house'
     )
     added_date = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='images/', blank=True)  # To upload images.!!AFTER WE NEED TO REMOVE blank==True
+    images = models.ManyToManyField(Image)  # To upload images.!!AFTER WE NEED TO REMOVE blank==True
     video = models.FileField(
         upload_to='videos/',
         blank=True,
         validators=[FileExtensionValidator(allowed_extensions=['MOV', 'avi', 'mp4', 'webm', 'mkv'])],
         help_text='optional'
     )  # validators are to make users to upload only specific filetypes
-    floor_plans = models.ImageField(help_text='optional', blank=True)  # images for floor plans
 
     def __str__(self):
-        return (f"{self.user.username} {self.category} {self.name} {self.description} {self.rooms} {self.bedrooms}"
-                f"{self.bathrooms} {self.size} {self.architectural_style} {self.added_date} {self.image}"
-                f"{self.video} {self.floor_plans}")
+        return f"{self.user.username} - {self.name}"
 
 
 # model for estates that are for selling
 class ForSaleEstate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     estate = models.ForeignKey(Estate, on_delete=models.CASCADE)
-    price = models.PositiveIntegerField(default=0)
+    price = models.PositiveIntegerField()
     start_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -65,8 +80,8 @@ class ForSaleEstate(models.Model):
 class OnAuctionEstate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     estate = models.ForeignKey(Estate, on_delete=models.CASCADE)
-    starting_price = models.PositiveIntegerField(default=0)
-    asking_price = models.PositiveIntegerField(default=0)
+    starting_price = models.PositiveIntegerField()
+    asking_price = models.PositiveIntegerField()
     sold_for = models.PositiveIntegerField(null=True, blank=True)
     starting_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()

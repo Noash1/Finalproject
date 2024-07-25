@@ -98,40 +98,104 @@ class About(TemplateView):
     template_name = "about.html"
 
 
-def add_estate_view(request):
-    estate_form = AddEstateForm
-    estate_for_sale = AddEstateForSaleForm
-    estate_on_auction = AddEstateOnAuctionForm
+class MyEstatesView(ListView):
+    model = Estate
+    template_name = 'my_estates.html'
+    context_object_name = 'estate'
+    ordering = ['name']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['for_sale'] = ForSaleEstate.objects.all().order_by('estate__name')
+        context['on_auction'] = OnAuctionEstate.objects.all().order_by('estate__name')
+        return context
+
+
+def add_estate_for_sale_view(request):
     if request.method == 'POST':
-        estate_form = AddEstateForm(request.POST, prefix='estate_form')
-        estate_for_sale = AddEstateForSaleForm(request.POST, prefix='estate_for_sale')
-        estate_on_auction = AddEstateOnAuctionForm(request.POST, prefix='estate_on_auction')
+        estate_form = AddEstateForm(request.POST, request.FILES)
+        estate_for_sale = AddEstateForSaleForm(request.POST)
 
         if estate_form.is_valid() and estate_for_sale.is_valid():
             estate = estate_form.save(commit=False)
             estate.user = request.user  # The logged-in user
-            for_sale = estate_for_sale.save(commit=False)
-            for_sale.user = estate.user
-            for_sale.estate = estate
+            estate.category = 'sell'
+            for image in request.FILES.getlist('images'):
+                img = Image(image=image)
+                img.save()
+                estate.images.add(img)
             estate.save()
+            for_sale = estate_for_sale.save(commit=False)
+            for_sale.user = request.user
+            for_sale.estate = estate
             for_sale.save()
-            return redirect('index.html')
+            return redirect('home')
 
-        elif estate_form.is_valid() and estate_on_auction.is_valid():
-            # Process estate and on_auction data
-            pass
-        else:
-            estate_form = AddEstateForm(prefix='estate_form')
-            estate_for_sale = AddEstateForSaleForm(prefix='estate_for_sale')
-            estate_on_auction = AddEstateOnAuctionForm(prefix='estate_on_auction')
+    else:
+        estate_form = AddEstateForm()
+        estate_for_sale = AddEstateForSaleForm()
+    return render(request, 'add_estate.html', {
+        'estate_form': estate_form,
+        'estate_for_sale': estate_for_sale
+    })
 
-    return render(request,
-                  'add_estate.html',
-                  {'estate_form': estate_form,
-                   'estate_for_sale': estate_for_sale,
-                   'estate_on_auction': estate_on_auction}
-                  )
+
+def add_estate_on_auction_view(request):
+    if request.method == 'POST':
+        estate_form = AddEstateForm(request.POST, request.FILES)
+        estate_on_auction = AddEstateOnAuctionForm(request.POST)
+
+        if estate_form.is_valid() and estate_on_auction.is_valid():
+            estate = estate_form.save(commit=False)
+            estate.user = request.user  # The logged-in user
+            estate.category = 'sell'
+            estate.save()
+            on_auction = estate_on_auction.save(commit=False)
+            on_auction.user = request.user
+            on_auction.estate = estate
+            on_auction.save()
+            return redirect('home')
+    else:
+        estate_form = AddEstateForm()
+        estate_on_auction = AddEstateOnAuctionForm()
+    return render(request, 'add_estate.html', {'estate_form': estate_form, 'estate_on_auction': estate_on_auction})
+
+# def add_estate_view(request):
+#     if request.method == 'POST':
+#         estate_form = AddEstateForm(request.POST, request.FILES, prefix='estate_form')
+#         estate_for_sale = AddEstateForSaleForm(request.POST, prefix='estate_for_sale')
+#         estate_on_auction = AddEstateOnAuctionForm(request.POST, prefix='estate_on_auction')
+#
+#         if estate_form.is_valid():
+#             estate = estate_form.save(commit=False)
+#             estate.user = request.user  # The logged-in user
+#             estate.save()
+#
+#             if estate_for_sale.is_valid():
+#                 for_sale = estate_for_sale.save(commit=False)
+#                 for_sale.user = estate.user
+#                 for_sale.estate = estate
+#                 for_sale.save()
+#
+#             if estate_on_auction.is_valid():
+#                 on_sale = estate_on_auction.save(commit=False)
+#                 on_sale.user = estate.user
+#                 on_sale.estate = estate
+#                 on_sale.save()
+#
+#             return redirect('home')
+#
+#     else:
+#         estate_form = AddEstateForm()
+#         estate_for_sale = AddEstateForSaleForm()
+#         estate_on_auction = AddEstateOnAuctionForm()
+#
+#     return render(request,
+#                   'add_estate.html',
+#                   {'estate_form': estate_form,
+#                    'estate_for_sale': estate_for_sale,
+#                    'estate_on_auction': estate_on_auction}
+#                   )
 
 # def add_estate_view(request):
 #     if request.method == 'POST':

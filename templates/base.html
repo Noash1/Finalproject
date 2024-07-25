@@ -60,25 +60,22 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto">
                         <a href="{% url 'home' %}" class="nav-item nav-link active">Home</a>
-                        {#                        <a href="{% url 'about' %}" class="nav-item nav-link">About</a>#}
-                        {#                        <div class="nav-item dropdown">#}
-                        {#                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Property</a>#}
-                        {#                            <div class="dropdown-menu rounded-0 m-0">#}
-                        {#                                <a href="property-list.html" class="dropdown-item">Property List</a>#}
-                        {#                                <a href="property-type.html" class="dropdown-item">Property Type</a>#}
-                        {#                                <a href="property-agent.html" class="dropdown-item">Property Agent</a>#}
-                        {#                            </div>#}
-                        {#                        </div>#}
-
                     </div>
-                </div>
-                <div>
                     {% if user.is_authenticated %}
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle"
-                               data-bs-toggle="dropdown">{{ user.username }}</a>
+                               data-bs-toggle="dropdown">Add estate</a>
                             <div class="dropdown-menu rounded-0 m-0">
-                                <a class="dropdown-item" href="{% url 'add_estate' %}">Add estate</a>
+                                <a class="dropdown-item" href="{% url 'add_estate_for_sale' %}">Add estate for sale</a>
+                                <a class="dropdown-item" href="{% url 'add_estate_on_auction' %}">Add estate on
+                                    auction</a>
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle"
+                               data-bs-toggle="dropdown">{{ user.username.capitalize }}</a>
+                            <div class="dropdown-menu rounded-0 m-0">
+                                <a class="dropdown-item" href="{% url 'my_estates' %}">My estates</a>
                                 <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
                                 <form action="{% url 'logout' %}" method="post">
                                     {% csrf_token %}
@@ -98,39 +95,11 @@
 
                     {% endif %}
                 </div>
+
             </nav>
         </div>
         <!-- Navbar End -->
 
-
-        <!-- Header Start -->
-        {% if not is_signup_page and not is_login_page and not is_profile_page %}
-            <div class="container-fluid header bg-white p-0">
-                <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
-                    <div class="col-md-6 p-5 mt-lg-5">
-                        <h1 class="display-5 animated fadeIn mb-4">Find A <span class="text-primary">Perfect Home</span>
-                            To Live With Your Family</h1>
-                        <p class="animated fadeIn mb-4 pb-2">Discover the ideal sanctuary that caters to all your
-                            family's
-                            needs and desires. Experience unparalleled comfort and a sense of belonging in a home
-                            designed
-                            for cherished moments and lasting memories.</p>
-                        {#                    <a href="" class="btn btn-primary py-3 px-5 me-3 animated fadeIn">Get Started</a>#}
-                    </div>
-                    <div class="col-md-6 animated fadeIn">
-                        <div class="owl-carousel header-carousel">
-                            <div class="owl-carousel-item">
-                                <img class="img-fluid" src="{% static 'img/carousel-1.jpg' %}" alt="">
-                            </div>
-                            {#                        <div class="owl-carousel-item">#}
-                            {#                            <img class="img-fluid" src="{% static 'img/carousel-2.jpg' %}" alt="">#}
-                            {#                        </div>#}
-                        </div>
-                    </div>
-                </div>
-        </div>
-        {% endif %}
-        <!-- Header End -->
 
         {% block content %}
 
