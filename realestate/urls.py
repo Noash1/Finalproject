@@ -15,6 +15,7 @@ urlpatterns = [
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path('accounts/profile/', ProfileView.as_view(), name='profile'),
     path('my_estates/new', add_estate_view, name='add_estate'),
+    path('convert-currency/', convert_currency_view, name='convert_currency'),
     # Include the default auth urls after your custom definitions
     path('', include('django.contrib.auth.urls')),
 ]
