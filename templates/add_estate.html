@@ -2,21 +2,22 @@
 {% load static %}
 
 {% block content %}
-    <link href="{% static 'css/hide_form.css' %}" rel="stylesheet">
-    <script src="{% static 'js/hide_forms.js' %}" ></script>
 
     <h2>Estate Entry Form</h2>
-    <form method="post">
+    <form method="post" enctype='multipart/form-data'>
         {% csrf_token %}
         <div>
             {{ estate_form.as_p }}
         </div>
-        <div id="estate_for_sale" class="hidden">
+        {% if estate_for_sale %}
+        <div>
             {{ estate_for_sale.as_p }}
         </div>
-        <div id="estate_on_auction" class="hidden">
+        {% elif estate_on_auction %}
+        <div>
             {{ estate_on_auction.as_p }}
         </div>
+        {% endif %}
         <button type="submit">Add estate</button>
     </form>
 

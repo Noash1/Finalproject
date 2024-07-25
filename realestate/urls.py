@@ -14,8 +14,10 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path('accounts/profile/', ProfileView.as_view(), name='profile'),
-    path('my_estates/new', add_estate_view, name='add_estate'),
     path('convert-currency/', convert_currency_view, name='convert_currency'),
+    path('my_estates/', MyEstatesView.as_view(), name='my_estates'),
+    path('my_estates/add_for_sale', add_estate_for_sale_view, name='add_estate_for_sale'),
+    path('my_estates/add_on_auction', add_estate_on_auction_view, name='add_estate_on_auction'),
     # Include the default auth urls after your custom definitions
     path('', include('django.contrib.auth.urls')),
 ]

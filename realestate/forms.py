@@ -34,12 +34,31 @@ class SignUpForm(UserCreationForm):
         return super().clean_password2()
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+
 class AddEstateForm(forms.ModelForm):
+    images = MultipleFileField(label='Pictures')
+
     class Meta:
         model = Estate
-        widgets = {'category': forms.RadioSelect,
-                   'description': forms.Textarea(attrs={'rows': 3})}
-        exclude = ['user']
+        widgets = {'description': forms.Textarea(attrs={'rows': 3}),}
+        exclude = ['user', 'category']
 
 
 class AddEstateForSaleForm(forms.ModelForm):
