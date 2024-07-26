@@ -53,7 +53,7 @@ class Estate(models.Model):
         help_text='Style of the house'
     )
     added_date = models.DateTimeField(auto_now_add=True)
-    images = models.ManyToManyField(Image)  # To upload images.!!AFTER WE NEED TO REMOVE blank==True
+    images = models.ManyToManyField(Image)  # To upload images
     video = models.FileField(
         upload_to='videos/',
         blank=True,
@@ -66,8 +66,7 @@ class Estate(models.Model):
 
     def get_full_description(self):
         return (f"{self.user.username} {self.category} {self.name} {self.description} {self.rooms} {self.bedrooms}"
-                f"{self.bathrooms} {self.size} {self.architectural_style} {self.added_date} {self.images}"
-                f"{self.video}")
+                f"{self.bathrooms} {self.size} {self.architectural_style} {self.added_date}")
 
 
 # model for estates that are for selling
