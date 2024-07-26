@@ -8,6 +8,9 @@ class Image(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     images = models.ImageField(upload_to='images/')
 
+    def __str__(self):
+        return str(self.images)
+
 
 # Model Estate has all the needed fields to describe the estate, that owner wants to put to auction or just sell
 class Estate(models.Model):
