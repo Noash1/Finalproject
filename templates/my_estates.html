@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block content %}
-
-    <h2>My estates</h2>
+{% load humanize %}
+    <h2>My Estates</h2>
     <h3>For sale</h3>
     <div class="row g-4">
         {% for estate in for_sale %}
@@ -17,7 +17,7 @@
                             </div>
                         </div>
                         <div class="p-4 pb-0">
-                            <h5 class="text-primary mb-3">{{ estate.price }}€</h5>
+                            <h5 class="text-primary mb-3">€{{ estate.price|intcomma }}</h5>
                             <a class="d-block h5 mb-2" href="">{{ estate.estate.name }}</a>
                             <p><i class="fa fa-map-marker-alt text-primary me-2"></i>Address</p>
                         </div>
@@ -65,4 +65,6 @@
                     </div>
                 {% endif %}
             {% endfor %}
+        </div>
+
 {% endblock %}

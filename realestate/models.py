@@ -9,7 +9,7 @@ class Image(models.Model):
     images = models.ImageField(upload_to='images/')
 
     def __str__(self):
-        return self.images
+        return str(self.images)
 
 
 # Model Estate has all the needed fields to describe the estate, that owner wants to put to auction or just sell
