@@ -12,7 +12,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="property-item rounded overflow-hidden">
                         <div class="position-relative overflow-hidden">
-                            <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.image.url }}" alt=""></a>
+                            <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
                             <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
                                 Villa
                             </div>
@@ -35,14 +35,14 @@
             {% endif %}
         {% endfor %}
 
-        <h3>On auction</h3>
+        <h3>On Auction</h3>
         <div class="row g-4">
             {% for estate in on_auction %}
                 {% if request.user == estate.user %}
                     <div class="col-lg-4 col-md-6">
                         <div class="property-item rounded overflow-hidden">
                             <div class="position-relative overflow-hidden">
-                                <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.image.url }}" alt=""></a>
+                                <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
                                 <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
                                     Villa
                                 </div>

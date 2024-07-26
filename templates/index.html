@@ -154,8 +154,8 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="property-item rounded overflow-hidden">
                                     <div class="position-relative overflow-hidden">
-                                        <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.url }}" alt=""></a>
-                                        <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">{{ estate.estate.architectural_style }}</div>
+                                        <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
+                                        <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">{{ estate.estate.get_type_display }}</div>
                                     </div>
                                     <div class="p-4 pb-0">
                                         <h5 class="text-primary mb-3">€{{ estate.price|intcomma }}</h5>
@@ -180,8 +180,8 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="property-item rounded overflow-hidden">
                                     <div class="position-relative overflow-hidden">
-                                        <a href=""><img class="img-fluid" src="{{ estate.estate.image.url }}" alt=""></a>
-                                        <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">Villa</div>
+                                        <a href=""><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
+                                        <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">{{ estate.estate.get_type_display }}</div>
                                     </div>
                                     <div class="p-4 pb-0">
                                         <h5 class="text-primary mb-3">€{{ estate.starting_price|intcomma }}</h5>
@@ -197,9 +197,7 @@
                             </div>
                             {% endfor %}
 
-                            <div class="col-12 text-center">
-                                <a class="btn btn-primary py-3 px-5" href="">Browse More Property</a>
-                            </div>
+
                         </div>
                     </div>
                 </div>
