@@ -12,6 +12,7 @@ class EstateAdmin(admin.ModelAdmin):
 # Register your models here.
 # admin.site.register(Category)
 admin.site.register(Estate, EstateAdmin)
+admin.site.register(Image)
 admin.site.register(ForSaleEstate)
 admin.site.register(OnAuctionEstate)
 admin.site.register(Bid)

@@ -117,14 +117,6 @@ class ProfileView(TemplateView):
         return render(request, 'registration/profile.html', {"user": user})
 
 
-class ForSaleView(TemplateView):
-    template_name = "forsale.html"
-
-
-class AuctionView(TemplateView):
-    template_name = "forauction.html"
-
-
 class Profile(TemplateView):
     template_name = "registration/profile.html"
 
@@ -153,18 +145,19 @@ def add_estate_for_sale_view(request):
 
         if estate_form.is_valid() and estate_for_sale.is_valid():
             estate = estate_form.save(commit=False)
-            estate.user = request.user  # The logged-in user
+            estate.user = request.user
             estate.category = 'sell'
+            estate.save()
             for image in request.FILES.getlist('images'):
-                img = Image(image=image)
+                img = Image(images=image)
+                img.user = request.user
                 img.save()
                 estate.images.add(img)
-            estate.save()
             for_sale = estate_for_sale.save(commit=False)
             for_sale.user = request.user
             for_sale.estate = estate
             for_sale.save()
-            return redirect('home')
+            return redirect('my_estates')
 
     else:
         estate_form = AddEstateForm()
@@ -182,18 +175,26 @@ def add_estate_on_auction_view(request):
 
         if estate_form.is_valid() and estate_on_auction.is_valid():
             estate = estate_form.save(commit=False)
-            estate.user = request.user  # The logged-in user
-            estate.category = 'sell'
+            estate.user = request.user
+            estate.category = 'auction'
             estate.save()
+            for image in request.FILES.getlist('images'):
+                img = Image(images=image)
+                img.user = estate.user
+                img.save()
+                estate.images.add(img)
             on_auction = estate_on_auction.save(commit=False)
-            on_auction.user = request.user
+            on_auction.user = estate.user
             on_auction.estate = estate
             on_auction.save()
-            return redirect('home')
+            return redirect('my_estates')
     else:
         estate_form = AddEstateForm()
         estate_on_auction = AddEstateOnAuctionForm()
-    return render(request, 'add_estate.html', {'estate_form': estate_form, 'estate_on_auction': estate_on_auction})
+    return render(request, 'add_estate.html', {
+        'estate_form': estate_form,
+        'estate_on_auction': estate_on_auction
+    })
 
 # def add_estate_view(request):
 #     if request.method == 'POST':

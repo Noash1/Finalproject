@@ -53,11 +53,12 @@ class MultipleFileField(forms.FileField):
 
 
 class AddEstateForm(forms.ModelForm):
-    images = MultipleFileField(label='Pictures')
+    images = MultipleFileField(label='pictures')
 
     class Meta:
         model = Estate
-        widgets = {'description': forms.Textarea(attrs={'rows': 3}),}
+        widgets = {'description': forms.Textarea(attrs={'rows': 3}),
+                   'images': forms.CheckboxSelectMultiple}
         exclude = ['user', 'category']
 
 
