@@ -1,5 +1,5 @@
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login
 from .forms import *
+from realestate.utils import convert_currency
 
 
 class CustomLogoutView(LogoutView):
@@ -232,6 +233,16 @@ def add_estate_on_auction_view(request):
 #                    'estate_for_sale': estate_for_sale,
 #                    'estate_on_auction': estate_on_auction}
 #                   )
+
+
+def convert_currency_view(request):
+    in_amount = request.GET['in_amount']
+    in_amount = float(in_amount)
+    in_currency = "EUR"
+    out_currency = "USD"
+    data = {'out_amount': convert_currency(in_amount, in_currency=in_currency, out_currency=out_currency), "out_currency": out_currency, "in_currency": in_currency}
+    return JsonResponse(data)
+
 
 # def add_estate_view(request):
 #     if request.method == 'POST':
