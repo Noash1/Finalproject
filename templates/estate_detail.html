@@ -9,7 +9,7 @@
                     <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
                         <div class="about-img position-relative overflow-hidden p-5 pe-0">
                             {% for image in estate.images.all %}
-                            <img class="img-fluid w-100" src="{{ image.image.url }}" alt="{{ image.name}}">
+                            <img class="img-fluid w-100" src="{{ image.url }}" alt="{{ image.name}}">
                             {% endfor %}<!--image here-->
                         </div>
                     </div>

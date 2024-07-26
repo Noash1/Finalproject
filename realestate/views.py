@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, UpdateView, DeleteView
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.urls import reverse_lazy
@@ -196,6 +196,57 @@ def add_estate_on_auction_view(request):
         'estate_form': estate_form,
         'estate_on_auction': estate_on_auction
     })
+
+
+class EstateForSaleUpdateView(UpdateView):
+    model = Estate
+    form_class = AddEstateForm
+    template_name = 'add_estate.html'
+    success_url = reverse_lazy('my_estates')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['estate_for_sale'] = AddEstateForSaleForm(self.request.POST, self.request.FILES, instance=self.get_estate())
+        else:
+            context['estate_for_sale'] = AddEstateForSaleForm(instance=self.get_estate())
+        return context
+
+    def get_estate(self):
+        return get_object_or_404(ForSaleEstate, estate=self.object)
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        estate_for_sale = context['estate_for_sale']
+        if estate_for_sale.is_valid():
+            response = super().form_valid(form)
+            estate_for_sale.save()
+            return response
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+
+# def update_estate_for_sale_view(request, estate_id, for_sale_id):
+#     estate = get_object_or_404(Estate, pk=estate_id)
+#     for_sale = get_object_or_404(ForSaleEstate, pk=for_sale_id)
+#
+#     if request.method == 'POST':
+#         estate_form = AddEstateForm(request.POST, instance=estate)
+#         for_sale_form = AddEstateForSaleForm(request.POST, instance=for_sale)
+#
+#         if estate_form.is_valid() and for_sale_form.is_valid():
+#             estate_form.save()
+#             for_sale_form.save()
+#             return redirect('success_url')  # replace with your success URL
+#
+#     else:
+#         estate_form = AddEstateForm(instance=estate)
+#         for_sale_form = AddEstateForSaleForm(instance=for_sale)
+#
+#     return render(request, 'add_estate.html', {
+#         'estate_form': estate_form,
+#         'for_sale_form': for_sale_form,
+#     })
 
 # def add_estate_view(request):
 #     if request.method == 'POST':

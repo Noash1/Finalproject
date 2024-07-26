@@ -12,14 +12,14 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="property-item rounded overflow-hidden">
                         <div class="position-relative overflow-hidden">
-                            <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.image.url }}" alt=""></a>
+                            <a href="{% url 'estate_detail' estate.estate.pk %}"><img class="img-fluid" src="{{ estate.estate.image.url }}" alt=""></a>
                             <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
                                 Villa
                             </div>
                         </div>
                         <div class="p-4 pb-0">
                             <h5 class="text-primary mb-3">{{ estate.price|intcomma }}€</h5>
-                            <a class="d-block h5 mb-2" href="{% url 'estate_detail' estate.estate.id %}">{{ estate.estate.name }}</a>
+                            <a class="d-block h5 mb-2" href="{% url 'estate_detail' estate.estate.pk %}">{{ estate.estate.name }}</a>
                             <p><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ estate.estate.address }}</p>
                         </div>
                         <div class="d-flex border-top">
@@ -30,6 +30,11 @@
                             <small class="flex-fill text-center py-2"><i
                                     class="fa fa-bath text-primary me-2"></i>{{ estate.estate.bathrooms }}</small>
                         </div>
+                        <div>
+                            <a href="{% url 'estate_for_sale_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
+{#                            <a href="{% url 'estate_delete' post.pk %}" class="btn btn-danger btn-sm">Delete</a>#}
+                        </div>
+
                     </div>
                 </div>
             {% endif %}
