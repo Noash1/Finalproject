@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from django.views.generic import TemplateView, ListView, FormView, DetailView, View, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, UpdateView, DeleteView
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.urls import reverse_lazy
