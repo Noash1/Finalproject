@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from django.views.generic import TemplateView, ListView, FormView, DetailView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, View, UpdateView, DeleteView
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.urls import reverse_lazy
@@ -198,6 +198,37 @@ def add_estate_on_auction_view(request):
     })
 
 
+# class EstateForSaleUpdateView(View):
+#     def get(self, request, pk):
+#         estate_for_sale = get_object_or_404(Estate, pk=pk)
+#         for_sale_form = AddEstateForSaleForm(instance=estate_for_sale)
+#         estate_form = AddEstateForm()
+#         context = {
+#             'estate_form': estate_form,
+#             'for_sale_form': for_sale_form,
+#             'estate_for_sale': estate_for_sale
+#         }
+#         return render(request, 'add_estate.html', context)
+#
+#     def post(self, request, pk):
+#         estate_for_sale = get_object_or_404(ForSaleEstate, pk=pk)
+#         for_sale_form = AddEstateForSaleForm(request.POST, instance=estate_for_sale)
+#         estate_form = AddEstateForm(request.POST, request.FILES)
+#         if for_sale_form.is_valid() and estate_form.is_valid():
+#             estate_form.save()
+#             for image in request.FILES.getlist('images'):
+#                 img = Image(images=image)
+#                 img.save()
+#                 estate_form.images.add(img)
+#             estate_for_sale.save()
+#             return redirect('my_estates')
+#         context = {
+#             'estate_form': estate_form,
+#             'for_sale_form': for_sale_form,
+#             'estate_for_sale': estate_for_sale
+#         }
+#         return render(request, 'add_estate.html', context)
+
 class EstateForSaleUpdateView(UpdateView):
     model = Estate
     form_class = AddEstateForm
@@ -207,23 +238,49 @@ class EstateForSaleUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['estate_for_sale'] = AddEstateForSaleForm(self.request.POST, self.request.FILES, instance=self.get_estate())
+            context['estate_form'] = AddEstateForm(self.request.POST, self.request.FILES, instance=self.get_estate())
+            context['estate_for_sale'] = AddEstateForSaleForm(self.request.POST, instance=self.get_for_sale_estate())
         else:
-            context['estate_for_sale'] = AddEstateForSaleForm(instance=self.get_estate())
+            context['estate_form'] = AddEstateForm(instance=self.get_estate())
+            context['estate_for_sale'] = AddEstateForSaleForm(instance=self.get_for_sale_estate())
         return context
 
-    def get_estate(self):
+    def get_for_sale_estate(self):
         return get_object_or_404(ForSaleEstate, estate=self.object)
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        estate_for_sale = context['estate_for_sale']
-        if estate_for_sale.is_valid():
-            response = super().form_valid(form)
-            estate_for_sale.save()
-            return response
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
+    def get_estate(self):
+        # id = self.get_form_kwargs()
+        # for img in estate.images:
+        #     img.
+        return get_object_or_404(Estate, id=self.object.id)
+
+    # def form_valid(self, form):
+    #     context = self.get_context_data()
+    #     estate = context['estate_form']
+    #     estate_for_sale = context['estate_for_sale']
+    #     if estate.is_valid() and estate_for_sale.is_valid():
+    #         response = super().form_valid(form)
+    #         estate.save()
+    #         for image in request.FILES.getlist('images'):
+    #             img = Image(images=image)
+    #             img.save()
+    #             estate.images.add(img)
+    #         estate_for_sale.save()
+    #         return response
+    #     else:
+    #         return self.render_to_response(self.get_context_data(form=form))
+
+
+class EstateDeleteView(DeleteView):
+    model = Estate
+    template_name = 'estate_confirm_delete.html'
+    success_url = reverse_lazy('my_estates')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        estate = self.get_object()
+        context['estate'] = estate
+        return context
 
 
 # def update_estate_for_sale_view(request, estate_id, for_sale_id):

@@ -32,9 +32,8 @@
                         </div>
                         <div>
                             <a href="{% url 'estate_for_sale_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
-{#                            <a href="{% url 'estate_delete' post.pk %}" class="btn btn-danger btn-sm">Delete</a>#}
+                            <a href="{% url 'estate_delete' estate.estate.pk %}" class="btn btn-danger btn-sm">Delete</a>
                         </div>
-
                     </div>
                 </div>
             {% endif %}
@@ -66,6 +65,10 @@
                                         class="fa fa-bed text-primary me-2"></i>{{ estate.estate.bedrooms }}</small>
                                 <small class="flex-fill text-center py-2"><i
                                         class="fa fa-bath text-primary me-2"></i>{{ estate.estate.bathrooms }}</small>
+                            </div>
+                            <div>
+                                <a href="{% url 'estate_for_sale_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="{% url 'estate_delete' estate.estate.pk %}" class="btn btn-danger btn-sm">Delete</a>
                             </div>
                         </div>
                     </div>

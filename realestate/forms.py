@@ -2,8 +2,9 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .views import User
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Estate, ForSaleEstate, OnAuctionEstate
+from .models import Estate, ForSaleEstate, OnAuctionEstate, Image
 from django.contrib.auth.models import User
+from django.forms.models import inlineformset_factory
 
 
 class LoginForm(AuthenticationForm):
@@ -53,13 +54,16 @@ class MultipleFileField(forms.FileField):
 
 
 class AddEstateForm(forms.ModelForm):
-    images = MultipleFileField(label='pictures')
+    images = MultipleFileField(label='Pictures')
 
     class Meta:
         model = Estate
         widgets = {'description': forms.Textarea(attrs={'rows': 3}),
                    'images': forms.CheckboxSelectMultiple}
         exclude = ['user', 'category']
+
+
+# ImageFormSet = inlineformset_factory()
 
 
 class AddEstateForSaleForm(forms.ModelForm):

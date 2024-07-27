@@ -17,7 +17,7 @@ urlpatterns = [
     path('my_estates/add_for_sale', add_estate_for_sale_view, name='add_estate_for_sale'),
     path('my_estates/add_on_auction', add_estate_on_auction_view, name='add_estate_on_auction'),
     path('my_estates/edit/<int:pk>/', EstateForSaleUpdateView.as_view(), name='estate_for_sale_update'),
-    # path('estates/<int:pk>/delete/', EstateDeleteView.as_view(), name='estate_delete'),
+    path('estates/<int:pk>/delete/', EstateDeleteView.as_view(), name='estate_delete'),
 
     # Include the default auth urls after your custom definitions
     path('', include('django.contrib.auth.urls')),
