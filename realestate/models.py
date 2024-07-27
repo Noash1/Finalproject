@@ -23,6 +23,7 @@ class Estate(models.Model):
                                      ('mansion', 'Mansion'),
                                      ('duplex', 'Duplex'),
                                      ('castle', 'Castle'),
+                                     ('loft', 'Loft'),
                                      ('other', 'Other')
                                      ],
                             default='other',

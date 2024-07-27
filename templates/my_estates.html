@@ -14,7 +14,7 @@
                         <div class="position-relative overflow-hidden">
                             <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
                             <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                                Villa
+                                {{ estate.estate.get_type_display }}
                             </div>
                         </div>
                         <div class="p-4 pb-0">
@@ -48,7 +48,7 @@
                             <div class="position-relative overflow-hidden">
                                 <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
                                 <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                                    Villa
+                                    {{ estate.estate.get_type_display }}
                                 </div>
                             </div>
                             <div class="p-4 pb-0">
@@ -67,7 +67,7 @@
                                         class="fa fa-bath text-primary me-2"></i>{{ estate.estate.bathrooms }}</small>
                             </div>
                             <div>
-                                <a href="{% url 'estate_for_sale_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="{% url 'estate_on_auction_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
                                 <a href="{% url 'estate_delete' estate.estate.pk %}" class="btn btn-danger btn-sm">Delete</a>
                             </div>
                         </div>
