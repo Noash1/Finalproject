@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, View, UpdateView, DeleteView
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.urls import reverse_lazy
@@ -204,44 +204,97 @@ def add_estate_on_auction_view(request):
         'estate_on_auction': estate_on_auction
     })
 
-# def add_estate_view(request):
-#     if request.method == 'POST':
-#         estate_form = AddEstateForm(request.POST, request.FILES, prefix='estate_form')
-#         estate_for_sale = AddEstateForSaleForm(request.POST, prefix='estate_for_sale')
-#         estate_on_auction = AddEstateOnAuctionForm(request.POST, prefix='estate_on_auction')
-#
-#         if estate_form.is_valid():
-#             estate = estate_form.save(commit=False)
-#             estate.user = request.user  # The logged-in user
-#             estate.save()
-#
-#             if estate_for_sale.is_valid():
-#                 for_sale = estate_for_sale.save(commit=False)
-#                 for_sale.user = estate.user
-#                 for_sale.estate = estate
-#                 for_sale.save()
-#
-#             if estate_on_auction.is_valid():
-#                 on_sale = estate_on_auction.save(commit=False)
-#                 on_sale.user = estate.user
-#                 on_sale.estate = estate
-#                 on_sale.save()
-#
-#             return redirect('home')
-#
-#     else:
-#         estate_form = AddEstateForm()
-#         estate_for_sale = AddEstateForSaleForm()
-#         estate_on_auction = AddEstateOnAuctionForm()
-#
-#     return render(request,
-#                   'add_estate.html',
-#                   {'estate_form': estate_form,
-#                    'estate_for_sale': estate_for_sale,
-#                    'estate_on_auction': estate_on_auction}
-#                   )
+
+class EstateForSaleUpdateView(UpdateView):
+    model = Estate
+    form_class = AddEstateForm
+    template_name = 'add_estate.html'
+    success_url = reverse_lazy('my_estates')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['estate_form'] = AddEstateForm(self.request.POST, self.request.FILES, instance=self.get_estate())
+            context['estate_for_sale'] = AddEstateForSaleForm(self.request.POST, instance=self.get_for_sale_estate())
+        else:
+            context['estate_form'] = AddEstateForm(instance=self.get_estate())
+            context['estate_for_sale'] = AddEstateForSaleForm(instance=self.get_for_sale_estate())
+        return context
+
+    def get_for_sale_estate(self):
+        return get_object_or_404(ForSaleEstate, estate=self.object)
+
+    def get_estate(self):
+        # id = self.get_form_kwargs()
+        # for img in estate.images:
+        #     img.
+        return get_object_or_404(Estate, id=self.object.id)
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        estate = context['estate_form']
+        estate_for_sale = context['estate_for_sale']
+        if estate.is_valid() and estate_for_sale.is_valid():
+            response = super().form_valid(form)
+            estate.save()
+            estate_for_sale.save()
+            return response
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
 
 
+class EstateOnAuctionUpdateView(UpdateView):
+    model = Estate
+    form_class = AddEstateForm
+    template_name = 'add_estate.html'
+    success_url = reverse_lazy('my_estates')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['estate_form'] = AddEstateForm(self.request.POST, self.request.FILES, instance=self.get_estate())
+            context['estate_on_auction'] = AddEstateOnAuctionForm(self.request.POST, instance=self.get_on_auction_estate())
+        else:
+            context['estate_form'] = AddEstateForm(instance=self.get_estate())
+            context['estate_on_auction'] = AddEstateOnAuctionForm(instance=self.get_on_auction_estate())
+        return context
+
+    def get_on_auction_estate(self):
+        return get_object_or_404(OnAuctionEstate, estate=self.object)
+
+    def get_estate(self):
+        # id = self.get_form_kwargs()
+        # for img in estate.images:
+        #     img.
+        return get_object_or_404(Estate, id=self.object.id)
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        estate = context['estate_form']
+        estate_on_auction = context['estate_on_auction']
+        if estate.is_valid() and estate_on_auction.is_valid():
+            response = super().form_valid(form)
+            estate.save()
+            estate_on_auction.save()
+            return response
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+
+# Class for deleting estates
+class EstateDeleteView(DeleteView):
+    model = Estate
+    template_name = 'estate_confirm_delete.html'
+    success_url = reverse_lazy('my_estates')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        estate = self.get_object()
+        context['estate'] = estate
+        return context
+
+
+# Function for currency converter
 def convert_currency_view(request):
     in_amount = request.GET['in_amount']
     in_amount = float(in_amount)
@@ -249,28 +302,3 @@ def convert_currency_view(request):
     out_currency = "USD"
     data = {'out_amount': convert_currency(in_amount, in_currency=in_currency, out_currency=out_currency), "out_currency": out_currency, "in_currency": in_currency}
     return JsonResponse(data)
-
-
-# def add_estate_view(request):
-#     if request.method == 'POST':
-#         form = AddEstateForm(request.POST)
-#         if form.is_valid():
-#             estate = form.save(commit=False)
-#             estate.user = request.user  # The logged-in user
-#             estate.save()
-#             return redirect('index.html')
-#     else:
-#         form = AddEstateForm()
-#     return render(request, 'add_estate.html', {'form': form})
-
-
-# class AddEstateView(CreateView):
-#     model = Estate
-#     form_class = AddEstateForm
-#     template_name = 'add_estate.html'
-#     success_url = reverse_lazy('home')
-#
-#     def get_user(self, request):
-#         if request.user.is_authenticated:
-#             user = request.user
-#             return user
