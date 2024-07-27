@@ -17,6 +17,14 @@
             {{ estate_on_auction.as_p }}
         </div>
         {% endif %}
+    <div>
+        {% if estate.images %}
+            <h4>Current images:</h4>
+            {% for image in estate.images.all %}
+            <img src="{{ image.images.url }}" alt="Current image">
+            {% endfor %}
+        {% endif %}
+    </div><br>
         <button type="submit">Save</button>
     </form>
 

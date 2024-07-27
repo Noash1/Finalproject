@@ -258,9 +258,6 @@ class EstateForSaleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Updat
         return get_object_or_404(ForSaleEstate, estate=self.object)
 
     def get_estate(self):
-        # id = self.get_form_kwargs()
-        # for img in estate.images:
-        #     img.
         return get_object_or_404(Estate, id=self.object.id)
 
     def form_valid(self, form):
@@ -297,9 +294,6 @@ class EstateOnAuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
         return get_object_or_404(OnAuctionEstate, estate=self.object)
 
     def get_estate(self):
-        # id = self.get_form_kwargs()
-        # for img in estate.images:
-        #     img.
         return get_object_or_404(Estate, id=self.object.id)
 
     def form_valid(self, form):
