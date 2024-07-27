@@ -131,7 +131,7 @@ def estate_make_bid(request, pk):
     bid_sum = float(bid_sum)
     last_bid = last_auction.bid_set.last()
     # Need to check last_bid, there is no last bid.
-    if last_bid and bid_sum > last_bid.bidding_sum:
+    if last_bid and bid_sum > last_bid.bidding_sum or last_bid == None:
         bid = Bid(estate=last_auction, bidding_sum=bid_sum, user=request.user)
         bid.save()
     return HttpResponseRedirect(reverse("estate_detail", args=[pk]))
