@@ -2,30 +2,37 @@
 {% load static %}
 
 {% block content %}
-    <h2>Estate Entry Form</h2>
-    <form method="post" enctype='multipart/form-data'>
-        {% csrf_token %}
-        <div>
-            {{ estate_form.as_p }}
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-0 gx-5 align-items-end">
+                <div class="text-start mx-auto mb-5 wow slideInLeft" data-wow-delay="0.1s">
+                    <h2>Estate Entry Form</h2>
+                    <form method="post" enctype='multipart/form-data'>
+                        {% csrf_token %}
+                        <div>
+                            {{ estate_form.as_p }}
+                        </div>
+                        {% if estate_for_sale %}
+                        <div>
+                            {{ estate_for_sale.as_p }}
+                        </div>
+                        {% elif estate_on_auction %}
+                        <div>
+                            {{ estate_on_auction.as_p }}
+                        </div>
+                        {% endif %}
+                    <div>
+                        {% if estate.images %}
+                            <h4>Current images:</h4>
+                            {% for image in estate.images.all %}
+                            <img src="{{ image.images.url }}" alt="Current image">
+                            {% endfor %}
+                        {% endif %}
+                    </div><br>
+                        <button type="submit">Save</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        {% if estate_for_sale %}
-        <div>
-            {{ estate_for_sale.as_p }}
-        </div>
-        {% elif estate_on_auction %}
-        <div>
-            {{ estate_on_auction.as_p }}
-        </div>
-        {% endif %}
-    <div>
-        {% if estate.images %}
-            <h4>Current images:</h4>
-            {% for image in estate.images.all %}
-            <img src="{{ image.images.url }}" alt="Current image">
-            {% endfor %}
-        {% endif %}
-    </div><br>
-        <button type="submit">Save</button>
-    </form>
-
+    </div>
 {% endblock %}
