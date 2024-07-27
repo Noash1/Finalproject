@@ -17,7 +17,7 @@ from .forms import *
 from realestate.utils import convert_currency
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
-
+from django.utils import timezone
 
 class CustomLogoutView(LogoutView):
 
@@ -104,11 +104,15 @@ class EstateDetailView(DetailView):
         last_auction = estate.onauctionestate_set.last() 
         context['its_auction'] = not last_auction == None #mich
         context['auction_starting_price'] = last_auction.starting_price if last_auction else 0
+        context['auction_exceeded'] = last_auction.end_date <= timezone.now()
         if last_auction:
             last_bid = last_auction.bid_set.last()
             last_bid_sum = last_bid.bidding_sum if last_bid else -1
+            last_user = last_bid.user if last_bid else None
         context['last_bid_sum'] = last_bid_sum
+        context['last_user'] = last_user
         context['comment_form'] = comment_form
+
         return context
 
     def post(self, request, *args, **kwargs):
