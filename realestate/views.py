@@ -111,7 +111,12 @@ class EstateDetailView(DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        estate = self.get_object()
+        estate = get_object_or_404(Estate, pk=kwargs['pk'])
+
+        if 'buy' in request.POST:
+            for_sale_estate = get_object_or_404(ForSaleEstate, estate=estate)
+            booking = Booking.objects.create(user=request.user, estate=for_sale_estate)
+            return redirect('booking_confirmation', pk=booking.pk)
 
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -123,6 +128,14 @@ class EstateDetailView(DetailView):
         context = self.get_context_data(estate=estate)
         context['comment_form'] = comment_form
         return self.render_to_response(context)
+
+
+class BookingConfirmationView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        booking = get_object_or_404(Booking, pk=kwargs['pk'])
+        seller = booking.estate.user
+        context = {'booking': booking, 'seller': seller}
+        return render(request, 'booking_confirmation.html', context)
 
 
 @login_required(login_url='login')

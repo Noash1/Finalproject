@@ -16,7 +16,7 @@
                     </div>
                   <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
                         <h1 class="mb-4">{{ estate.name }}</h1>
-                        <p class="mb-4">Type: {{ estate.type }}</p>
+                        <p class="mb-4">Type: {{ estate.get_type_display }}</p>
                         <p class="mb-4">Location: {{ estate.address }}</p>
                         <p class="mb-4">Description: {{ estate.description }}</p>
                         <p><i class="fa fa-check text-primary me-3"></i>{{ estate.get_category_display }}</p>
@@ -28,7 +28,10 @@
                         {% if user.is_authenticated %}
                           {% if last_sale_price > -1 %}
                             <h2 class="mb-4">€{{ last_sale_price|intcomma }}</h2>
-                            <a class="btn btn-primary py-3 px-5 mt-3" href="">Buy</a>
+                            <form method="post" action="">
+                              {%  csrf_token %}
+                              <button type="submit" name="buy" class="btn btn-primary py-3 px-5 mt-3">Buy</button>
+                          </form>
                           {% endif %}
                           {% if last_bid_sum > -1 and its_auction%}
                             <h2 class="mb-4">Current bid: €{{ last_bid_sum|intcomma }}</h2>
