@@ -3,77 +3,83 @@
 {% load humanize %}
 
 {% block content %}
-
-    <h2>My estates</h2>
-    <h3>For sale</h3>
-    <div class="row g-4">
-        {% for estate in for_sale %}
-            {% if request.user == estate.user %}
-                <div class="col-lg-4 col-md-6">
-                    <div class="property-item rounded overflow-hidden">
-                        <div class="position-relative overflow-hidden">
-                            <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
-                            <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                                {{ estate.estate.get_type_display }}
-                            </div>
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-0 gx-5 align-items-end">
+                <div class="text-start mx-auto mb-5 wow slideInLeft" data-wow-delay="0.1s">
+                    <h2>My estates</h2>
+                    <h3>For sale</h3>
+                        <div class="row g-4">
+                            {% for estate in for_sale %}
+                                {% if request.user == estate.user %}
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="property-item rounded overflow-hidden">
+                                            <div class="position-relative overflow-hidden">
+                                                <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
+                                                <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
+                                                    {{ estate.estate.get_type_display }}
+                                                </div>
+                                            </div>
+                                            <div class="p-4 pb-0">
+                                                <h5 class="text-primary mb-3">{{ estate.price|intcomma }}€</h5>
+                                                <a class="d-block h5 mb-2" href="{% url 'estate_detail' estate.estate.id %}">{{ estate.estate.name }}</a>
+                                                <p><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ estate.estate.address }}</p>
+                                            </div>
+                                            <div class="d-flex border-top">
+                                                <small class="flex-fill text-center border-end py-2"><i
+                                                        class="fa fa-ruler-combined text-primary me-2"></i>{{ estate.estate.size }}</small>
+                                                <small class="flex-fill text-center border-end py-2"><i
+                                                        class="fa fa-bed text-primary me-2"></i>{{ estate.estate.bedrooms }}</small>
+                                                <small class="flex-fill text-center py-2"><i
+                                                        class="fa fa-bath text-primary me-2"></i>{{ estate.estate.bathrooms }}</small>
+                                            </div>
+                                            <div class="p-3">
+                                                <a href="{% url 'estate_for_sale_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                                <a href="{% url 'estate_delete' estate.estate.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="p-4 pb-0">
-                            <h5 class="text-primary mb-3">{{ estate.price|intcomma }}€</h5>
-                            <a class="d-block h5 mb-2" href="{% url 'estate_detail' estate.estate.id %}">{{ estate.estate.name }}</a>
-                            <p><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ estate.estate.address }}</p>
+                    <h3>On Auction</h3>
+                        <div class="row g-4">
+                            {% for estate in on_auction %}
+                                {% if request.user == estate.user %}
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="property-item rounded overflow-hidden">
+                                            <div class="position-relative overflow-hidden">
+                                                <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
+                                                <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
+                                                    {{ estate.estate.get_type_display }}
+                                                </div>
+                                            </div>
+                                            <div class="p-4 pb-0">
+                                                <h6 class="text-primary mb-3">Auction ends: {{ estate.end_date }}</h6>
+                                                <h5 class="text-primary mb-3">{{ estate.starting_price|intcomma }}€</h5>
+                                                <a class="d-block h5 mb-2" href="{% url 'estate_detail' estate.estate.id %}">{{ estate.estate.name }}</a>
+                                                <p><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ estate.estate.address }}</p>
+                                            </div>
+                                            <div class="d-flex border-top">
+                                                <small class="flex-fill text-center border-end py-2"><i
+                                                        class="fa fa-ruler-combined text-primary me-2"></i>{{ estate.estate.size }}
+                                                </small>
+                                                <small class="flex-fill text-center border-end py-2"><i
+                                                        class="fa fa-bed text-primary me-2"></i>{{ estate.estate.bedrooms }}</small>
+                                                <small class="flex-fill text-center py-2"><i
+                                                        class="fa fa-bath text-primary me-2"></i>{{ estate.estate.bathrooms }}</small>
+                                            </div>
+                                            <div class="p-3">
+                                                <a href="{% url 'estate_on_auction_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                                <a href="{% url 'estate_delete' estate.estate.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i
-                                    class="fa fa-ruler-combined text-primary me-2"></i>{{ estate.estate.size }}</small>
-                            <small class="flex-fill text-center border-end py-2"><i
-                                    class="fa fa-bed text-primary me-2"></i>{{ estate.estate.bedrooms }}</small>
-                            <small class="flex-fill text-center py-2"><i
-                                    class="fa fa-bath text-primary me-2"></i>{{ estate.estate.bathrooms }}</small>
-                        </div>
-                        <div>
-                            <a href="{% url 'estate_for_sale_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="{% url 'estate_delete' estate.estate.pk %}" class="btn btn-danger btn-sm">Delete</a>
-                        </div>
-                    </div>
                 </div>
-            {% endif %}
-        {% endfor %}
-
-        <h3>On Auction</h3>
-        <div class="row g-4">
-            {% for estate in on_auction %}
-                {% if request.user == estate.user %}
-                    <div class="col-lg-4 col-md-6">
-                        <div class="property-item rounded overflow-hidden">
-                            <div class="position-relative overflow-hidden">
-                                <a href="{% url 'estate_detail' estate.estate.id %}"><img class="img-fluid" src="{{ estate.estate.images.all.0.images.url }}" alt=""></a>
-                                <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                                    {{ estate.estate.get_type_display }}
-                                </div>
-                            </div>
-                            <div class="p-4 pb-0">
-                                <h6 class="text-primary mb-3">Auction ends: {{ estate.end_date }}</h6>
-                                <h5 class="text-primary mb-3">{{ estate.starting_price|intcomma }}€</h5>
-                                <a class="d-block h5 mb-2" href="{% url 'estate_detail' estate.estate.id %}">{{ estate.estate.name }}</a>
-                                <p><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ estate.estate.address }}</p>
-                            </div>
-                            <div class="d-flex border-top">
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-ruler-combined text-primary me-2"></i>{{ estate.estate.size }}
-                                </small>
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-bed text-primary me-2"></i>{{ estate.estate.bedrooms }}</small>
-                                <small class="flex-fill text-center py-2"><i
-                                        class="fa fa-bath text-primary me-2"></i>{{ estate.estate.bathrooms }}</small>
-                            </div>
-                            <div>
-                                <a href="{% url 'estate_on_auction_update' estate.estate.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="{% url 'estate_delete' estate.estate.pk %}" class="btn btn-danger btn-sm">Delete</a>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
         </div>
     </div>
+</div>
 {% endblock %}
