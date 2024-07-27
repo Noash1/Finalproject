@@ -33,7 +33,7 @@
                           {% if last_bid_sum > -1 %}
                             <h2 class="mb-4">Current bid: €{{ last_bid_sum|intcomma }}</h2>
                           {% endif %}
-                          {% if last_bid_sum > -2 %}
+                        {% if last_bid_sum >= -2 %}
                             <form action="{%  url 'estate_make_bid' estate.id %}" method="post">
                               {% csrf_token %}
                               <fieldset>
@@ -48,9 +48,9 @@
                           {%  endif %}
                         {%  endif %}
                     </div>
-                    <h3>Comments</h3>
+                    {% for comment in comments %}
                     <div>
-                        {% for comment in comments %}
+                    <h4>Comments</h4>
                             <div>
                                 <b> {{ comment.author }}</b>
                             </div>
@@ -59,16 +59,17 @@
                             </div>
                             <div>
                                 {{ comment.content }}
-                            </div>
+                            </div><br>
                         {% endfor %}
-                        <h3>Add a Comment</h3>
+                    {% if user.is_authenticated %}
+                        <h4>Add a Comment</h4>
 
                         <form method="POST">
                             {% csrf_token %}
                             {{ comment_form.as_p }}
                             <button type="submit">Add Comment</button>
                         </form>
-
+                    {% endif %}
                     </div>
                 </div>
             </div>

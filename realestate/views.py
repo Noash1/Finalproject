@@ -96,6 +96,7 @@ class EstateDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         estate = self.get_object()
+        comment_form = CommentForm()
         context['comments'] = self.object.comments.all()
         last_sale = estate.forsaleestate_set.last()
         context['last_sale_price'] = last_sale.price if last_sale else -1
@@ -105,10 +106,12 @@ class EstateDetailView(DetailView):
             last_bid = last_auction.bid_set.last()
             last_bid_sum = last_bid.bidding_sum if last_bid else -1
         context['last_bid_sum'] = last_bid_sum
+        context['comment_form'] = comment_form
         return context
 
     def post(self, request, *args, **kwargs):
         estate = self.get_object()
+
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
@@ -131,7 +134,7 @@ def estate_make_bid(request, pk):
     bid_sum = float(bid_sum)
     last_bid = last_auction.bid_set.last()
     # Need to check last_bid, there is no last bid.
-    if last_bid and bid_sum > last_bid.bidding_sum:
+    if last_bid and bid_sum > last_bid.bidding_sum or last_bid == None:
         bid = Bid(estate=last_auction, bidding_sum=bid_sum, user=request.user)
         bid.save()
     return HttpResponseRedirect(reverse("estate_detail", args=[pk]))

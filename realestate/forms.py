@@ -78,4 +78,5 @@ class AddEstateOnAuctionForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
+        widgets = {'content': forms.Textarea(attrs={'rows': 4})}
         fields = ['content']
