@@ -48,6 +48,28 @@
                           {%  endif %}
                         {%  endif %}
                     </div>
+                    <h3>Comments</h3>
+                    <div>
+                        {% for comment in comments %}
+                            <div>
+                                <b> {{ comment.author }}</b>
+                            </div>
+                            <div>
+                                {{ comment.date_posted }}
+                            </div>
+                            <div>
+                                {{ comment.content }}
+                            </div>
+                        {% endfor %}
+                        <h3>Add a Comment</h3>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ comment_form.as_p }}
+                            <button type="submit">Add Comment</button>
+                        </form>
+
+                    </div>
                 </div>
             </div>
         </div>

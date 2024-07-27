@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .views import User
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Estate, ForSaleEstate, OnAuctionEstate, Image
+from .models import Estate, ForSaleEstate, OnAuctionEstate, Comment
 from django.contrib.auth.models import User
 
 
@@ -73,3 +73,9 @@ class AddEstateOnAuctionForm(forms.ModelForm):
         model = OnAuctionEstate
         widgets = {'end_date': forms.NumberInput(attrs={'type': 'date'})}
         exclude = ['user', 'estate', 'sold_for']
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']

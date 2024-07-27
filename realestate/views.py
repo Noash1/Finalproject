@@ -1,6 +1,13 @@
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from django.views.generic import TemplateView, ListView, FormView, DetailView, UpdateView, DeleteView
+from django.views.generic import (
+    TemplateView,
+    ListView,
+    FormView,
+    DetailView,
+    UpdateView,
+    DeleteView,
+)
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.urls import reverse_lazy
@@ -8,6 +15,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login
 from .forms import *
 from realestate.utils import convert_currency
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 
 class CustomLogoutView(LogoutView):
@@ -87,6 +96,7 @@ class EstateDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         estate = self.get_object()
+        context['comments'] = self.object.comments.all()
         last_sale = estate.forsaleestate_set.last()
         context['last_sale_price'] = last_sale.price if last_sale else -1
         last_bid_sum = -2
@@ -97,7 +107,21 @@ class EstateDetailView(DetailView):
         context['last_bid_sum'] = last_bid_sum
         return context
 
+    def post(self, request, *args, **kwargs):
+        estate = self.get_object()
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.author = request.user
+            comment.estate = estate
+            comment.save()
+            return redirect('estate_detail', pk=estate.id)
+        context = self.get_context_data(estate=estate)
+        context['comment_form'] = comment_form
+        return self.render_to_response(context)
 
+
+@login_required(login_url='login')
 def estate_make_bid(request, pk):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("estate_detail", args=[pk]))
@@ -106,13 +130,14 @@ def estate_make_bid(request, pk):
     bid_sum = request.POST.get('bid_sum', 0)
     bid_sum = float(bid_sum)
     last_bid = last_auction.bid_set.last()
+    # Need to check last_bid, there is no last bid.
     if last_bid and bid_sum > last_bid.bidding_sum:
         bid = Bid(estate=last_auction, bidding_sum=bid_sum, user=request.user)
         bid.save()
     return HttpResponseRedirect(reverse("estate_detail", args=[pk]))
 
 
-class ProfileView(TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'registration/profile.html'
 
     def get_context_data(self, **kwargs):
@@ -133,11 +158,12 @@ class About(TemplateView):
     template_name = "about.html"
 
 
-class MyEstatesView(ListView):
+class MyEstatesView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Estate
     template_name = 'my_estates.html'
     context_object_name = 'estate'
     ordering = ['name']
+    permission_required = 'my_estates'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -146,6 +172,8 @@ class MyEstatesView(ListView):
         return context
 
 
+
+@login_required(login_url='login')
 def add_estate_for_sale_view(request):
     if request.method == 'POST':
         estate_form = AddEstateForm(request.POST, request.FILES)
@@ -176,6 +204,7 @@ def add_estate_for_sale_view(request):
     })
 
 
+@login_required(login_url='login')
 def add_estate_on_auction_view(request):
     if request.method == 'POST':
         estate_form = AddEstateForm(request.POST, request.FILES)
@@ -205,11 +234,12 @@ def add_estate_on_auction_view(request):
     })
 
 
-class EstateForSaleUpdateView(UpdateView):
+class EstateForSaleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Estate
     form_class = AddEstateForm
     template_name = 'add_estate.html'
     success_url = reverse_lazy('my_estates')
+    permission_required = 'estate_for_sale_update'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -243,11 +273,12 @@ class EstateForSaleUpdateView(UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
 
 
-class EstateOnAuctionUpdateView(UpdateView):
+class EstateOnAuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Estate
     form_class = AddEstateForm
     template_name = 'add_estate.html'
     success_url = reverse_lazy('my_estates')
+    permission_required = 'estate_on_auction_update'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -282,10 +313,11 @@ class EstateOnAuctionUpdateView(UpdateView):
 
 
 # Class for deleting estates
-class EstateDeleteView(DeleteView):
+class EstateDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Estate
     template_name = 'estate_confirm_delete.html'
     success_url = reverse_lazy('my_estates')
+    permission_required = 'estate_delete'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
