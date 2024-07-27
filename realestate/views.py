@@ -67,8 +67,15 @@ class HomeView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['for_sale'] = ForSaleEstate.objects.all().order_by('estate__name')
-        context['on_auction'] = OnAuctionEstate.objects.all().order_by('estate__name')
+        for_sale_estates = ForSaleEstate.objects.all()
+        for_auction_estates = OnAuctionEstate.objects.all()
+        if "type" in self.request.GET:
+            """Getting a list of estate objects based on url parameter (i.e. property type in this case)"""
+            estate_type = self.request.GET['type']
+            for_sale_estates = for_sale_estates.filter(estate__type=estate_type)
+            for_auction_estates = for_auction_estates.filter(estate__type=estate_type)
+        context['for_sale'] = for_sale_estates.order_by('estate__name')
+        context['on_auction'] = for_auction_estates.order_by('estate__name')
         return context
 
 
