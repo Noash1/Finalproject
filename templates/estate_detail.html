@@ -33,7 +33,7 @@
                           {% if last_bid_sum > -1 %}
                             <h2 class="mb-4">Current bid: €{{ last_bid_sum|intcomma }}</h2>
                           {% endif %}
-                          {% if last_bid_sum > -2 %}
+                        {% if last_bid_sum >= -2 %}
                             <form action="{%  url 'estate_make_bid' estate.id %}" method="post">
                               {% csrf_token %}
                               <fieldset>
