@@ -103,6 +103,7 @@ class EstateDetailView(DetailView):
         last_bid_sum = -2
         last_auction = estate.onauctionestate_set.last() 
         context['its_auction'] = not last_auction == None #mich
+        context['auction_starting_price'] = last_auction.starting_price if last_auction else 0
         if last_auction:
             last_bid = last_auction.bid_set.last()
             last_bid_sum = last_bid.bidding_sum if last_bid else -1
