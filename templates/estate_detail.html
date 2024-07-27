@@ -24,12 +24,13 @@
                         <p><i class="fa fa-check text-primary me-3"></i>Number of bedrooms: {{ estate.bedrooms }}</p>
 						<p><i class="fa fa-check text-primary me-3"></i>Number of bathrooms: {{ estate.bathrooms }}</p>
                         <p><i class="fa fa-check text-primary me-3"></i>Size in square meters: {{ estate.size }}</p>
-                        <p><i class="fa fa-check text-primary me-3"></i>Architectural style: {{ estate.architectural_style }}</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Architectural style: {{ estate.get_architectural_style_display }}</p>
                         {% if user.is_authenticated %}
                           {% if last_sale_price > -1 %}
                             <h2 class="mb-4">€{{ last_sale_price|intcomma }}</h2>
                             <a class="btn btn-primary py-3 px-5 mt-3" href="">Buy</a>
                           {% endif %}
+
                           {% if last_bid_sum > -1 %}
                             <h2 class="mb-4">Current bid: €{{ last_bid_sum|intcomma }}</h2>
                           {% endif %}
@@ -43,16 +44,17 @@
                                 </label>
                               </fieldset>
                                 <br>
-                              <input class="btn btn-primary py-3 px-5 mt-3" type="submit" value="Make bid"/>
+                              <input class="btn btn-primary py-3 px-5 mt-3" type="submit" value="Make a Bid"/>
                             </form>
                           {%  endif %}
                         {%  endif %}
                     </div>
-                    {% for comment in comments %}
+
                     <div>
                     <h4>Comments</h4>
+                    {% for comment in comments %}
                             <div>
-                                <b> {{ comment.author }}</b>
+                                <b>{{ comment.author }}</b>
                             </div>
                             <div>
                                 {{ comment.date_posted }}
@@ -62,12 +64,12 @@
                             </div><br>
                         {% endfor %}
                     {% if user.is_authenticated %}
-                        <h4>Add a Comment</h4>
 
+                    <h4>Leave a Comment</h4>
                         <form method="POST">
                             {% csrf_token %}
                             {{ comment_form.as_p }}
-                            <button type="submit">Add Comment</button>
+                            <button class="btn btn-primary py-3 px-5 mt-3" type="submit">Submit</button>
                         </form>
                     {% endif %}
                     </div>
