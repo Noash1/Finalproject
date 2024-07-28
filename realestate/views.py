@@ -16,6 +16,7 @@ from django.contrib.auth import login
 from .forms import *
 from realestate.utils import convert_currency
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic.detail import SingleObjectMixin
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
@@ -137,7 +138,7 @@ class EstateDetailView(DetailView):
         return self.render_to_response(context)
 
 
-class BookingConfirmationView(TemplateView):
+class BookingConfirmationView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         booking = get_object_or_404(Booking, pk=kwargs['pk'])
         seller = booking.estate.user
@@ -174,20 +175,27 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         return render(request, 'registration/profile.html', {"user": user})
 
 
-class Profile(TemplateView):
-    template_name = "registration/profile.html"
+class ProfileUpdateView(ProfileView, UpdateView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_profile_page'] = True
+        return context
+
+    def get_user_profile(request, username):
+        user = User.objects.get(username=username)
+        return render(request, 'registration/profile.html', {"user": user})
 
 
-class About(TemplateView):
-    template_name = "about.html"
+# class Profile(TemplateView):
+#     template_name = "registration/profile.html"
 
 
-class MyEstatesView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class MyEstatesView(LoginRequiredMixin, ListView):
     model = Estate
     template_name = 'my_estates.html'
     context_object_name = 'estate'
     ordering = ['name']
-    permission_required = 'my_estates'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
