@@ -19,6 +19,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
+
 class CustomLogoutView(LogoutView):
 
     def dispatch(self, *args, **kwargs):
@@ -36,7 +37,7 @@ class CustomLoginView(LoginView):
 
     def from_valid(self, form):
         login(self.request, form.get_user())
-        next_url = self.request.GET.get('next', 'profile')
+        next_url = self.request.GET.get('next', 'my_estates')
         return redirect(next_url)
 
     def get_context_data(self, **kwargs):
@@ -100,17 +101,18 @@ class EstateDetailView(DetailView):
         context['comments'] = self.object.comments.all()
         last_sale = estate.forsaleestate_set.last()
         context['last_sale_price'] = last_sale.price if last_sale else -1
-        last_bid_sum = -2
-        last_auction = estate.onauctionestate_set.last() 
-        context['its_auction'] = not last_auction == None #mich
-        context['auction_starting_price'] = last_auction.starting_price if last_auction else 0
-        context['auction_exceeded'] = last_auction.end_date <= timezone.now()
-        if last_auction:
-            last_bid = last_auction.bid_set.last()
-            last_bid_sum = last_bid.bidding_sum if last_bid else -1
-            last_user = last_bid.user if last_bid else None
-        context['last_bid_sum'] = last_bid_sum
-        context['last_user'] = last_user
+        if estate.category == 'auction':
+            last_bid_sum = -2
+            last_auction = estate.onauctionestate_set.last()
+            context['its_auction'] = not last_auction == None #mich
+            context['auction_starting_price'] = last_auction.starting_price if last_auction else 0
+            context['auction_exceeded'] = last_auction.end_date <= timezone.now()
+            if last_auction:
+                last_bid = last_auction.bid_set.last()
+                last_bid_sum = last_bid.bidding_sum if last_bid else -1
+                last_user = last_bid.user if last_bid else None
+            context['last_bid_sum'] = last_bid_sum
+            context['last_user'] = last_user
         context['comment_form'] = comment_form
 
         return context
