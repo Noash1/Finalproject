@@ -67,7 +67,7 @@ All CRUD operations can be performed there.
 
 ### TESTING
 
-1. Run the tests.
+1. Run the tests.       No tests available yet :( 
 
     ```sh
     python manage.py test
@@ -82,4 +82,4 @@ All CRUD operations can be performed there.
     - feature/
     - bugfix/
 
-3. For the merge request, target the working branch to the `main` branch.
+3. For the merge request, target the working branch to the `develop` branch.
