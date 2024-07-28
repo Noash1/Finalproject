@@ -25,8 +25,8 @@ from .views import *
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include('realestate.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# this puts all media files in defined folder
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# # this puts all media files in defined folder
+# if settings.DEBUG:
+#     urlpatterns

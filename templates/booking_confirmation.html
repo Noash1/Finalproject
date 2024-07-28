@@ -1,0 +1,16 @@
+<!-- booking_confirmation.html -->
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="container">
+        <h1>Your booking is confirmed</h1>
+        <p>Here are the contact details of the seller:</p>
+        <ul>
+            <li>Name: {{ seller.username }}</li>
+            <li>Email: {{ seller.email }}</li>
+            <li>Phone: {{ seller.profile.phone_number }}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

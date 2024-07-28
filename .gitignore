@@ -161,5 +161,4 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# Migrations, because we are not using shared db.
-migrations/
+templates/static/media/images
