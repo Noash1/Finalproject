@@ -1,10 +1,10 @@
 # LuxDepo
 
-![demo image](templates/static/img/READMEDEMO.png)
+
 ## PROJECT
 
 LuxDepo is an ecommerce website application.
-
+![demo image](templates/static/img/READMEDEMO.png)
 ### CMS
 
 The project has an active admin panel which is accessible via `admin/`.
