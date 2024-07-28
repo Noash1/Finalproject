@@ -19,15 +19,18 @@ All CRUD operations can be performed there.
 ### Local installation
 
 1. Create and fill the `.env` configuration file with your postgres database credentials and django SECRET\_KEY.
+   You can generate a SECRET_KEY using the following command:
+   ```sh
+   python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'```
+   ```
+Example `.env` file:
 
-    ```sh
-    DEBUG=True
     SECRET_KEY=your_secret_key
     DB_NAME=your_db_name
     DB_USER=your_db_user
     DB_PASSWORD=your_db_password
     DB_HOST=your_db_host
-    ```
+
 2. Create and activate a virtual environment.
 
     ```sh
