@@ -9,6 +9,7 @@ class RealEstateTests(TestCase):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='testpass', email='testuser@example.com')
         self.estate = Estate.objects.create(
+            user=self.user,
             type='apartment',
             name='Test Estate',
             address='123 Test St',
@@ -44,7 +45,7 @@ class RealEstateTests(TestCase):
 
     def test_place_bid(self):
         self.client.login(username='testuser', password='testpass')
-        response = self.client.post(reverse('place_bid'), {
+        response = self.client.post(reverse('estate_make_bid'), {
             'user_id': self.user.id,
             'estate_id': self.on_auction_estate.id,
             'bidding_sum': 60000
