@@ -1,5 +1,6 @@
 # LuxDepo
 
+![demo image](templates/static/img/READMEDEMO.png)
 ## PROJECT
 
 LuxDepo is an ecommerce website application.
