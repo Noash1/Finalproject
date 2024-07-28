@@ -17,7 +17,7 @@ from .forms import *
 from realestate.utils import convert_currency
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
-
+from django.utils import timezone
 
 class CustomLogoutView(LogoutView):
 
@@ -101,16 +101,27 @@ class EstateDetailView(DetailView):
         last_sale = estate.forsaleestate_set.last()
         context['last_sale_price'] = last_sale.price if last_sale else -1
         last_bid_sum = -2
-        last_auction = estate.onauctionestate_set.last()
+        last_auction = estate.onauctionestate_set.last() 
+        context['its_auction'] = not last_auction == None #mich
+        context['auction_starting_price'] = last_auction.starting_price if last_auction else 0
+        context['auction_exceeded'] = last_auction.end_date <= timezone.now()
         if last_auction:
             last_bid = last_auction.bid_set.last()
             last_bid_sum = last_bid.bidding_sum if last_bid else -1
+            last_user = last_bid.user if last_bid else None
         context['last_bid_sum'] = last_bid_sum
+        context['last_user'] = last_user
         context['comment_form'] = comment_form
+
         return context
 
     def post(self, request, *args, **kwargs):
-        estate = self.get_object()
+        estate = get_object_or_404(Estate, pk=kwargs['pk'])
+
+        if 'buy' in request.POST:
+            for_sale_estate = get_object_or_404(ForSaleEstate, estate=estate)
+            booking = Booking.objects.create(user=request.user, estate=for_sale_estate)
+            return redirect('booking_confirmation', pk=booking.pk)
 
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -124,6 +135,14 @@ class EstateDetailView(DetailView):
         return self.render_to_response(context)
 
 
+class BookingConfirmationView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        booking = get_object_or_404(Booking, pk=kwargs['pk'])
+        seller = booking.estate.user
+        context = {'booking': booking, 'seller': seller}
+        return render(request, 'booking_confirmation.html', context)
+
+
 @login_required(login_url='login')
 def estate_make_bid(request, pk):
     if not request.user.is_authenticated:
@@ -134,7 +153,7 @@ def estate_make_bid(request, pk):
     bid_sum = float(bid_sum)
     last_bid = last_auction.bid_set.last()
     # Need to check last_bid, there is no last bid.
-    if last_bid and bid_sum > last_bid.bidding_sum or last_bid == None:
+    if last_bid and bid_sum > last_bid.bidding_sum or last_bid == None and bid_sum >= last_auction.starting_price: #mich
         bid = Bid(estate=last_auction, bidding_sum=bid_sum, user=request.user)
         bid.save()
     return HttpResponseRedirect(reverse("estate_detail", args=[pk]))

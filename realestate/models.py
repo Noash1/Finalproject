@@ -114,3 +114,13 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.author.username}: {self.content}"
+
+
+# Class for booking a property when clicking 'Buy'
+class Booking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    estate = models.ForeignKey(ForSaleEstate, on_delete=models.CASCADE)
+    booking_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"You've successfully booked {self.estate.estate.name} on {self.booking_date}"

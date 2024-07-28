@@ -16,7 +16,7 @@
                     </div>
                   <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
                         <h1 class="mb-4">{{ estate.name }}</h1>
-                        <p class="mb-4">Type: {{ estate.type }}</p>
+                        <p class="mb-4">Type: {{ estate.get_type_display }}</p>
                         <p class="mb-4">Location: {{ estate.address }}</p>
                         <p class="mb-4">Description: {{ estate.description }}</p>
                         <p><i class="fa fa-check text-primary me-3"></i>{{ estate.get_category_display }}</p>
@@ -24,16 +24,25 @@
                         <p><i class="fa fa-check text-primary me-3"></i>Number of bedrooms: {{ estate.bedrooms }}</p>
 						<p><i class="fa fa-check text-primary me-3"></i>Number of bathrooms: {{ estate.bathrooms }}</p>
                         <p><i class="fa fa-check text-primary me-3"></i>Size in square meters: {{ estate.size }}</p>
-                        <p><i class="fa fa-check text-primary me-3"></i>Architectural style: {{ estate.architectural_style }}</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Architectural style: {{ estate.get_architectural_style_display }}</p>
                         {% if user.is_authenticated %}
                           {% if last_sale_price > -1 %}
                             <h2 class="mb-4">€{{ last_sale_price|intcomma }}</h2>
-                            <a class="btn btn-primary py-3 px-5 mt-3" href="">Buy</a>
+                            <form method="post" action="">
+                              {%  csrf_token %}
+                              <button type="submit" name="buy" class="btn btn-primary py-3 px-5 mt-3">Buy</button>
+                          </form>
                           {% endif %}
-                          {% if last_bid_sum > -1 %}
+                          {% if last_bid_sum > -1 and its_auction and not auction_exceeded %}
                             <h2 class="mb-4">Current bid: €{{ last_bid_sum|intcomma }}</h2>
                           {% endif %}
-                        {% if last_bid_sum >= -2 %}
+                          {% if 0 > last_bid_sum and its_auction and not auction_exceeded %}
+                            <h2 class="mb-4">Minimal bid: €{{ auction_starting_price|intcomma }}</h2>
+                          {% endif %}
+                          {% if auction_exceeded %}
+                          <h2 class="mb-4">Auction ended with: €{{ last_bid_sum|intcomma }} bid. Winner is: {{ last_user }}</h2>
+                        {% endif %}
+                        {% if last_bid_sum >= -2 and its_auction and not auction_exceeded %}
                             <form action="{%  url 'estate_make_bid' estate.id %}" method="post">
                               {% csrf_token %}
                               <fieldset>
@@ -43,7 +52,7 @@
                                 </label>
                               </fieldset>
                                 <br>
-                              <input class="btn btn-primary py-3 px-5 mt-3" type="submit" value="Make bid"/>
+                              <input class="btn btn-primary py-3 px-5 mt-3" type="submit" value="Make a Bid"/>
                             </form>
                           {%  endif %}
                         {%  endif %}
@@ -52,7 +61,7 @@
                     <div>
                     <h4>Comments</h4>
                             <div>
-                                <b> {{ comment.author }}</b>
+                                <b>{{ comment.author }}</b>
                             </div>
                             <div>
                                 {{ comment.date_posted }}
@@ -66,7 +75,7 @@
                         <form method="POST">
                             {% csrf_token %}
                             {{ comment_form.as_p }}
-                            <button type="submit">Add Comment</button>
+                            <button class="btn btn-primary py-3 px-5 mt-3" type="submit">Submit</button>
                         </form>
                     {% endif %}
                     </div>
